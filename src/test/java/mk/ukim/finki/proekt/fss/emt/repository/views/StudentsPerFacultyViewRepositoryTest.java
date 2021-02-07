@@ -4,27 +4,32 @@ import mk.ukim.finki.proekt.fss.emt.model.Course;
 import mk.ukim.finki.proekt.fss.emt.model.Faculty;
 import mk.ukim.finki.proekt.fss.emt.model.Student;
 import mk.ukim.finki.proekt.fss.emt.model.StudyProgram;
+import mk.ukim.finki.proekt.fss.emt.model.events.StudentCreatedEvent;
+import mk.ukim.finki.proekt.fss.emt.model.exception.StudyProgramNotFoundException;
 import mk.ukim.finki.proekt.fss.emt.model.views.StudentsPerFacultyView;
 import mk.ukim.finki.proekt.fss.emt.model.views.StudentsPerStudyProgramView;
 import mk.ukim.finki.proekt.fss.emt.repository.CourseRepository;
 import mk.ukim.finki.proekt.fss.emt.repository.FacultyRepository;
 import mk.ukim.finki.proekt.fss.emt.repository.StudentRepository;
 import mk.ukim.finki.proekt.fss.emt.repository.StudyProgramRepository;
+import net.bytebuddy.utility.RandomString;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class StudentsPerFacultyViewTest {
+public class StudentsPerFacultyViewRepositoryTest {
 
     private List<Student> studentList;
     private List<Course> coursesList;
@@ -50,6 +55,10 @@ public class StudentsPerFacultyViewTest {
 
     @Autowired
     private StudentsPerFacultyViewRepository studentsPerFacultyViewRepository;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
 
     @Before
     public void init() {
@@ -135,5 +144,22 @@ public class StudentsPerFacultyViewTest {
         List<StudentsPerFacultyView> students = studentsPerFacultyViewRepository.findAll();
         Assert.assertEquals(3, students.size());
     }
+
+    @Test
+//    @Sql("classpath:createMaterializedView.sql")
+    public void testWhenCreatedNewStudent_AndThenMaterializedViewIsRefreshed() {
+        StudyProgram sp1 = studyProgramRepository.findById(1L).orElseThrow(StudyProgramNotFoundException::new);
+        StudentsPerFacultyView facultyWithNumStudents = studentsPerFacultyViewRepository.findById(1L).orElseThrow(RuntimeException::new);
+        Student s = new Student();
+        s.setIndex(RandomString.make(6));
+        s.setName("Test User");
+        s.setStudyProgram(sp1);
+        studentRepository.save(s);
+        eventPublisher.publishEvent(new StudentCreatedEvent(s, LocalDateTime.now()));
+        StudentsPerFacultyView facultyWithNumStudentsThen = studentsPerFacultyViewRepository.findById(1L).orElseThrow(RuntimeException::new);
+        Assert.assertEquals(Long.valueOf(facultyWithNumStudents.getNumStudents()),Long.valueOf(facultyWithNumStudentsThen.getNumStudents()));
+
+    }
+
 
 }

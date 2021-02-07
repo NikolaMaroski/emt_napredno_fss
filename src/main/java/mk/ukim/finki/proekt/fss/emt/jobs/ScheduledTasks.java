@@ -13,7 +13,7 @@ public class ScheduledTasks {
         this.studentService = studentService;
     }
 
-    @Scheduled(fixedRate = 5000)
+//    @Scheduled(fixedRate = 5000)
     public void refreshMViews(){
         studentService.refreshMV();
     }
