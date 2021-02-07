@@ -1,18 +1,21 @@
-package mk.ukim.finki.proekt.fss.emt.repository;
+package mk.ukim.finki.proekt.fss.emt.repository.views;
 
 import mk.ukim.finki.proekt.fss.emt.model.Course;
 import mk.ukim.finki.proekt.fss.emt.model.Faculty;
 import mk.ukim.finki.proekt.fss.emt.model.Student;
 import mk.ukim.finki.proekt.fss.emt.model.StudyProgram;
-import mk.ukim.finki.proekt.fss.emt.model.exception.StudentNotFoundException;
-import mk.ukim.finki.proekt.fss.emt.model.projections.StudentProjection;
+import mk.ukim.finki.proekt.fss.emt.model.views.StudentsPerStudyProgramView;
+import mk.ukim.finki.proekt.fss.emt.repository.CourseRepository;
+import mk.ukim.finki.proekt.fss.emt.repository.FacultyRepository;
+import mk.ukim.finki.proekt.fss.emt.repository.StudentRepository;
+import mk.ukim.finki.proekt.fss.emt.repository.StudyProgramRepository;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.orm.ObjectOptimisticLockingFailureException;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
@@ -20,10 +23,10 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class StudentRepositoryTest {
+public class StudentsPerStudyProgramViewRepositoryTest {
 
     private List<Student> studentList;
-    private List<Course> courseList;
+    private List<Course> coursesList;
     private List<Faculty> facultyList;
     private List<StudyProgram> studyPrograms;
 
@@ -36,14 +39,16 @@ public class StudentRepositoryTest {
     private StudentRepository studentRepository;
 
     @Autowired
-    private CourseRepository courseRepository;
+    private StudyProgramRepository studyProgramRepository;
 
     @Autowired
-    private StudyProgramRepository studyProgramRepository;
+    private CourseRepository courseRepository;
 
     @Autowired
     private FacultyRepository facultyRepository;
 
+    @Autowired
+    private StudentsPerStudyProgramViewRepository studentsPerStudyProgramViewRepository;
 
     @Before
     public void init() {
@@ -51,11 +56,11 @@ public class StudentRepositoryTest {
             return;
         }
         f1 = new Faculty();
-        f1.setId(1L);
+        f1.setId(1l);
         f1.setName("FINKI");
 
         f2 = new Faculty();
-        f2.setId(2L);
+        f2.setId(2l);
         f2.setName("FZF");
 
         facultyRepository.save(f1);
@@ -124,45 +129,10 @@ public class StudentRepositoryTest {
     }
 
     @Test
-    public void testFindAll(){
-        List<Student> students = studentRepository.findAll();
-        Assert.assertEquals(3L, students.size());
+    @Sql("classpath:createView.sql")
+    public void testFindAll() {
+        List<StudentsPerStudyProgramView> students = studentsPerStudyProgramViewRepository.findAll();
+        Assert.assertEquals(3, students.size());
     }
-
-    @Test
-    public void testFindOne(){
-        String studentIndex = "111111";
-        Student student =  studentRepository.findById(studentIndex).orElseThrow(StudentNotFoundException::new);
-        Assert.assertEquals(studentIndex, student.getIndex());
-    }
-
-    @Test
-    public void testFetchAll(){
-        List<Student> students = studentRepository.fetchAll();
-        Assert.assertEquals(3L, students.size());
-    }
-
-    @Test
-    public void testLoadAll(){
-        List<Student> students = studentRepository.loadAll();
-        Assert.assertEquals(3L, students.size());
-    }
-
-    @Test
-    public void testProjectIndexAndName(){
-        StudentProjection studentProjection = studentRepository.findStudentByIndex("111111");
-        Assert.assertEquals("111111", studentProjection.getIndex());
-    }
-
-    @Test(expected = ObjectOptimisticLockingFailureException.class)
-    public void testOptimisticLock() {
-        Student student1 = studentRepository.findById("111111").orElseThrow(StudentNotFoundException::new);
-        Student student2 = studentRepository.findById("111111").orElseThrow(StudentNotFoundException::new);
-        student1.setName("Mitre");
-        student2.setName("Petre");
-        studentRepository.save(student1);
-        studentRepository.save(student2);
-    }
-
 
 }
