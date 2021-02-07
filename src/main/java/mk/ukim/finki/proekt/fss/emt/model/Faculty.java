@@ -14,6 +14,7 @@ public class Faculty {
 
     @Id
     private Long id;
+
     private String name;
 
     @OneToMany(mappedBy = "faculty")

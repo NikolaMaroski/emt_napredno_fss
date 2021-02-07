@@ -12,6 +12,7 @@ public class Student {
     @Id
     @Column(name = "id")
     private String index;
+
     private String name;
 
     @ManyToOne
