@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
@@ -151,4 +152,16 @@ public class StudentRepositoryTest {
         StudentProjection studentProjection = studentRepository.findStudentByIndex("111111");
         Assert.assertEquals("111111", studentProjection.getIndex());
     }
+
+    @Test(expected = ObjectOptimisticLockingFailureException.class)
+    public void testOptimisticLock() {
+        Student student1 = studentRepository.findById("111111").orElseThrow(StudentNotFoundException::new);
+        Student student2 = studentRepository.findById("111111").orElseThrow(StudentNotFoundException::new);
+        student1.setName("Mitre");
+        student2.setName("Petre");
+        studentRepository.save(student1);
+        studentRepository.save(student2);
+    }
+
+
 }

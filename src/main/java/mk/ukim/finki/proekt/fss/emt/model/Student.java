@@ -15,6 +15,9 @@ public class Student {
 
     private String name;
 
+    @Version
+    private Long version;
+
     @ManyToOne
     private StudyProgram studyProgram;
 
