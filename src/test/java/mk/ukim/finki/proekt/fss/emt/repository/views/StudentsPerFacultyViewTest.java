@@ -4,6 +4,7 @@ import mk.ukim.finki.proekt.fss.emt.model.Course;
 import mk.ukim.finki.proekt.fss.emt.model.Faculty;
 import mk.ukim.finki.proekt.fss.emt.model.Student;
 import mk.ukim.finki.proekt.fss.emt.model.StudyProgram;
+import mk.ukim.finki.proekt.fss.emt.model.views.StudentsPerFacultyView;
 import mk.ukim.finki.proekt.fss.emt.model.views.StudentsPerStudyProgramView;
 import mk.ukim.finki.proekt.fss.emt.repository.CourseRepository;
 import mk.ukim.finki.proekt.fss.emt.repository.FacultyRepository;
@@ -23,7 +24,7 @@ import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class StudentsPerStudyProgramViewRepositoryTest {
+public class StudentsPerFacultyViewTest {
 
     private List<Student> studentList;
     private List<Course> coursesList;
@@ -48,7 +49,7 @@ public class StudentsPerStudyProgramViewRepositoryTest {
     private FacultyRepository facultyRepository;
 
     @Autowired
-    private StudentsPerStudyProgramViewRepository studentsPerStudyProgramViewRepository;
+    private StudentsPerFacultyViewRepository studentsPerFacultyViewRepository;
 
     @Before
     public void init() {
@@ -131,7 +132,7 @@ public class StudentsPerStudyProgramViewRepositoryTest {
     //    @Sql("classpath:createView.sql")
     @Test
     public void testFindAll() {
-        List<StudentsPerStudyProgramView> students = studentsPerStudyProgramViewRepository.findAll();
+        List<StudentsPerFacultyView> students = studentsPerFacultyViewRepository.findAll();
         Assert.assertEquals(3, students.size());
     }
 

@@ -9,18 +9,19 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-@Subselect("SELECT * FROM students_per_study_program")
-@Data
+@Subselect("SELECT * FROM students_per_faculty")
 @Immutable
-public class StudentsPerStudyProgramView {
+@Data
+public class StudentsPerFacultyView {
 
     @Id
-    @Column(name = "study_program_id")
-    private Long studyProgramId;
-//
-//    @Column(name = "study_program_name")
-//    private String studyProgramName;
+    @Column(name="faculty_id")
+    private Long id;
 
-    @Column(name = "num_students")
+    @Column(name="faculty_name")
+    private String facultyName;
+
+    @Column(name="num_students")
     private Integer numStudents;
+
 }
