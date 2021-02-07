@@ -5,6 +5,7 @@ import mk.ukim.finki.proekt.fss.emt.model.Faculty;
 import mk.ukim.finki.proekt.fss.emt.model.Student;
 import mk.ukim.finki.proekt.fss.emt.model.StudyProgram;
 import mk.ukim.finki.proekt.fss.emt.model.exception.StudentNotFoundException;
+import mk.ukim.finki.proekt.fss.emt.model.projections.StudentProjection;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -143,5 +144,11 @@ public class StudentRepositoryTest {
     public void testLoadAll(){
         List<Student> students = studentRepository.loadAll();
         Assert.assertEquals(3L, students.size());
+    }
+
+    @Test
+    public void testProjectIndexAndName(){
+        StudentProjection studentProjection = studentRepository.findStudentByIndex("111111");
+        Assert.assertEquals("111111", studentProjection.getIndex());
     }
 }
